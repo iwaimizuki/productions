@@ -48,15 +48,14 @@ bool MainGame::Initialize()
 
 int MainGame::Update()
 {
-	if (TimeManager::Instance().GetTimeLeft() < time_over)
-	{	
+	if (TimeManager::Instance().GetLimitTime() < time_over)
+	{
 		main->Stop();
 		return Scene::NEXT;
 	}
 	playermanager->Update();
 	enemymanager->Update(playermanager);
 	ovserver->Update(playermanager, enemymanager);
-	EffectManager::Instance().Update();
 	TimeManager::Instance().Update();
 	ui.Update();
 	return 0;
@@ -88,7 +87,6 @@ void MainGame::Draw3D()
 	playermanager->Draw();
 	enemymanager->Draw();
 	fieldManeger->Draw();
-	EffectManager::Instance().Draw();
 
 	GraphicsDevice.SetRenderState(DepthBuffer_Disable);
 	GraphicsDevice.SetRenderState(DepthBufferFunction_Always);

@@ -1,67 +1,63 @@
 #include"Ovserver.h"
 #include"../SceneManager/SceneManager.h"
-Ovserver::Ovserver()
-{
-}
-
-Ovserver::~Ovserver()
-{
-}
 
 int Ovserver::Update(PlayerManager* playerdata, EnemyManager* enemydata)
 {
-	ColisionDetection(playerdata, enemydata);
+	_playerdata = playerdata;
+	_enemydata = enemydata;
+
+	ColisionDetection();
 	return 0;
 }
 
-void Ovserver::ColisionDetection(PlayerManager* playerdata, EnemyManager* enemydata)
+void Ovserver::ColisionDetection()
 {
+	BoomerangEnemyHit();
+	EnemyPlayerHit();
+}
 
-	if (playerdata->GetShootState())
+void Ovserver::BoomerangEnemyHit()
+{
+	if (!_playerdata->GetShootState())return;
+
+	auto a_pos = _playerdata->GetBoomerang().GetCollision()->GetPosition();
+	auto a_scale = _playerdata->GetBoomerang().GetCollision()->GetScale();
+
+	for (auto enemy : _enemydata->GetEnemy())
 	{
-		auto a = playerdata->GetBoomerang().GetCollision();
-
-		auto a_pos = a->GetPosition();
-		auto a_scale = a->GetScale();
-		for (auto enemy : enemydata->GetEnemy())
+		auto b_pos = enemy->GetCollision()->GetPosition();
+		auto b_scale = enemy->GetCollision()->GetScale() / 2;
+		//! aとbのボックスの当たり判定
+		if (a_pos.x - a_scale.x < b_pos.x + b_scale.x &&
+			a_pos.x + a_scale.x > b_pos.x - b_scale.x &&
+			a_pos.z - a_scale.z < b_pos.z + b_scale.z &&
+			a_pos.z + a_scale.z > b_pos.z - b_scale.z)
 		{
-			auto b = enemy->GetCollision();
-			auto b_pos = b->GetPosition();
-			auto b_scale = b->GetScale() / 2;
-			//! aとbのボックスの当たり判定
-			if (a_pos.x - a_scale.x < b_pos.x + b_scale.x &&
-				a_pos.x + a_scale.x > b_pos.x - b_scale.x &&
-				a_pos.y - a_scale.y < b_pos.y + b_scale.y &&
-				a_pos.y + a_scale.y > b_pos.y - b_scale.y &&
-				a_pos.z - a_scale.z < b_pos.z + b_scale.z &&
-				a_pos.z + a_scale.z > b_pos.z - b_scale.z)
-			{
-				enemydata->OnCollisionEnter(enemy);
-				SceneManager::Instance().AddCombo();
-			}
+			_enemydata->OnCollisionEnter(enemy);
+			SceneManager::Instance().AddCombo();
 		}
 	}
+}
 
-	if (playerdata->GetAnimState() != playerdata->DAMAGE)
+void Ovserver::EnemyPlayerHit()
+{
+	if (_playerdata->GetAnimState() == _playerdata->DAMAGE)return;
+
+	auto a_pos = _playerdata->GetCollision()->GetPosition();
+	auto a_scale = _playerdata->GetCollision()->GetScale();
+
+	for (auto enemy : _enemydata->GetEnemy())
 	{
-		auto a_pos = playerdata->GetCollision()->GetPosition();
-		auto a_scale = playerdata->GetCollision()->GetScale();
-		for (auto enemy : enemydata->GetEnemy())
+		auto b_pos = enemy->GetCollision()->GetPosition();
+		auto b_scale = enemy->GetCollision()->GetScale() / 2;
+		//! aとbのボックスの当たり判定
+		if (a_pos.x - a_scale.x < b_pos.x + b_scale.x &&
+			a_pos.x + a_scale.x > b_pos.x - b_scale.x &&
+			a_pos.z - a_scale.z < b_pos.z + b_scale.z &&
+			a_pos.z + a_scale.z > b_pos.z - b_scale.z)
 		{
-			auto b = enemy->GetCollision();
-			auto b_pos = b->GetPosition();
-			auto b_scale = b->GetScale() / 2;
-			//! aとbのボックスの当たり判定
-			if (a_pos.x - a_scale.x < b_pos.x + b_scale.x &&
-				a_pos.x + a_scale.x > b_pos.x - b_scale.x &&
-				a_pos.y - a_scale.y < b_pos.y + b_scale.y &&
-				a_pos.y + a_scale.y > b_pos.y - b_scale.y &&
-				a_pos.z - a_scale.z < b_pos.z + b_scale.z &&
-				a_pos.z + a_scale.z > b_pos.z - b_scale.z)
-			{
-				playerdata->OnCollisionEnter();
-				break;
-			}
+			_playerdata->OnCollisionEnter();
+			break;
 		}
 	}
 }

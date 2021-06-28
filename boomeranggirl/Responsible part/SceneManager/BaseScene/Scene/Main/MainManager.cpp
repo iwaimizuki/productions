@@ -8,19 +8,17 @@ MainManager::MainManager()
 	_next_scene = SceneNumber::RESULT;
 }
 
-MainManager::~MainManager()
-{
-}
-
 bool MainManager::Initialize()
 {
 	_child_scene.push_back(std::make_unique<MainStart>());
 	_child_scene.push_back(std::make_unique<MainGame>());
 	_child_scene.push_back(std::make_unique<MainEnd>());
+
 	for (auto&& childscene : _child_scene)
 	{
 		childscene->Initialize();
 	}
+
 	return true;
 }
 

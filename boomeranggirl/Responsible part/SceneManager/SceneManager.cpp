@@ -64,6 +64,10 @@ void SceneManager::Draw()
 	GraphicsDevice.EndScene();
 }
 
+/**
+ * @fn 　　combo
+ * @brief  コンボ数の増加、コンボ継続時間のリセット
+ */
 void SceneManager::AddCombo()
 {
 	_combo_reset_time = 0.0f;
@@ -72,6 +76,11 @@ void SceneManager::AddCombo()
 	MaximumCombo();
 }
 
+/**
+ * @fn 　　combo
+ * @brief  最大コンボ数の更新
+ * @return 最大コンボ数
+ */
 int SceneManager::MaximumCombo()
 {
 	if (_combo <= _max_combo)return _max_combo;

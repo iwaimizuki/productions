@@ -1,54 +1,45 @@
+//! @file   TimeManager.h
+//! @brief  タイムの管理
+//! @author 岩井瑞希
+//! @date   2021/5/21
+
 #pragma once
+
 #include "../../ESGLib.h"
 
 class TimeManager
 {
-private:
-	TimeManager(const TimeManager&) = delete;
-	void operator=(const TimeManager&) = delete;
-
-
-
 public:
-	TimeManager();
-    ~TimeManager();
+	TimeManager() {};
+	~TimeManager() {};
 
 	static TimeManager& Instance() {
 		static TimeManager instance;
 		return instance;
 	};
 
-	void Initialize();
-	void Update();
+	bool Initialize();
+	int Update();
 	
-	//何秒立ったかの取得
-	inline float GetTime()		const { return time; }
+	//ゲーム開始から何秒経ったかの取得
+	float GetAdvancingTime(){ return _time; }
 	//残り時間の取得
-	inline float GetTimeLeft()  const { return limitTime - time; }
-	bool StartFlag();
-	void AddTime(float count) { limitTime += count; }
+	float GetLimitTime(){ return _limitTime - _time; }
+
+	bool GetGameStartFlag() { return _startTime >= STARTTIMEMAX; }
+	bool GetGameEndFlag() { return _time >= _limitTime; }
+
+	void AddTime(float count) { _limitTime += count; }
+
 private:
-	inline float GetLimitTime() const { return limitTime; }
-	int GetTimeMinutes();
-	int GetTimeSeconds();
-	int GetTimeOnesPlace();
-	int GetTimeTensPlace();
-	int Countdown();
-	float GetStartTime();
-	float GetTransitionTimer() const { return transition_time; }
-	//! 制限時間
-	float limitTime;
-	float time;
+	TimeManager(const TimeManager&) = delete;
+	void operator=(const TimeManager&) = delete;
 
-	//! 終了後のタイマー
-	float transition_time;
-	bool game_end;
+	const float STARTTIMEMAX = 4;
 
-	//! カウントダウン
-	float startTime;
-	int countTime;
+	float _limitTime = STARTTIMEMAX;
+	float _time = 0;
 
-	bool startFlag;
-	
-	};
+	float _startTime = 0;
+};
 

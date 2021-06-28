@@ -26,7 +26,7 @@ protected:
 	SPRITE _texture;
 
 	float _scale = 1.0f;
-	Vector3 _position;//!継承されるモデルのポジション
+	Vector3 _position = vector3(0,0,0);//!継承されるモデルのポジション
 	
 	std::unique_ptr<HitBox> _hit_box;
 	std::string _tag;
